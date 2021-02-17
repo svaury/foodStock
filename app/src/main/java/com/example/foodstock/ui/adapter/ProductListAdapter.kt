@@ -10,7 +10,7 @@ import com.example.foodstock.R
 import com.example.foodstock.model.Product
 
 
-class FoodListAdaoter(var foods:ArrayList<Product>, val context : Context): RecyclerView.Adapter<ProductViewHolder>() {
+class ProductListAdapter(var foods:ArrayList<Product>, val context : Context): RecyclerView.Adapter<ProductViewHolder>() {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ProductViewHolder {
         val view: View = LayoutInflater.from(context).inflate(R.layout.product_list_detail_layout,p0,false)
@@ -24,11 +24,15 @@ class FoodListAdaoter(var foods:ArrayList<Product>, val context : Context): Recy
     }
 
     fun addProduct(product : Product){
-
         foods.add(product)
         notifyDataSetChanged()
     }
 
+    fun addProducts(products : List<Product>){
+        foods.clear()
+        foods.addAll(products)
+        notifyDataSetChanged()
+    }
 
     override fun getItemCount(): Int {
         return foods.size
