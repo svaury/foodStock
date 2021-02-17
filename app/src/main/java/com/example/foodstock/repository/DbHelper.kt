@@ -2,11 +2,11 @@ package com.example.foodstock.repository
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.example.foodstock.repository.local.dao.FoodDao
-import com.example.foodstock.repository.local.entity.FoodEntity
+import com.example.foodstock.repository.local.dao.ProductDao
+import com.example.foodstock.repository.local.entity.ProductEntity
 
 
-@Database(entities = [FoodEntity::class], version = 1)
+@Database(entities = [ProductEntity::class], version = 1)
 abstract class DbHelper : RoomDatabase() {
-    abstract fun foodDao(): FoodDao
+    abstract fun productDao(): ProductDao
 }
