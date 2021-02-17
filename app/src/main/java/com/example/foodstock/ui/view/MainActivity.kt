@@ -1,9 +1,10 @@
-package com.example.foodstock
+package com.example.foodstock.ui.view
 
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.example.foodstock.R
 import com.example.foodstock.ui.adapter.ProductListAdapter
 import com.example.foodstock.ui.viewmodel.ProductStockViewModel
 import kotlinx.android.synthetic.main.activity_main.*

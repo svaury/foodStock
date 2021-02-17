@@ -10,10 +10,10 @@ interface ProductDao {
     fun getAll(): List<ProductEntity>
 
     @Query("SELECT * FROM stock WHERE bareCode = :strBarCode")
-    fun findProductByBarCode(strBarCode: String): ProductEntity
+    fun findProductByBarCode(strBarCode: String): ProductEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertProduct(productEntity: ProductEntity)
+    fun insertProduct(productEntity: ProductEntity): Long
 
 
 }

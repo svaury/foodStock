@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "stock")
 data class ProductEntity (
-    @PrimaryKey val id: Int,
+    @PrimaryKey(autoGenerate = true) val id: Int?,
     @ColumnInfo(name ="bareCode") val barCode : String,
     @ColumnInfo(name = "name") val name: String ,
-    @ColumnInfo(name = "thumbnailUrl") val thumbnailUrl : String,
+    @ColumnInfo(name = "thumbnailUrl") val thumbnailUrl : String?,
     @ColumnInfo(name = "peremptionDate") val peremptionDate : Long
 
 
