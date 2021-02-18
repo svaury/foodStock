@@ -39,11 +39,7 @@ class ProductRepository(var productDao: ProductDao, var getProductService: GetPr
     }
 
     fun addOrUpdateProduct(product: Product){
-        Log.i("Add Product ","Add product ")
-
         val result = productDao.insertProduct(ToProductEntityMapper().entityToProductModel(product))
-
-        Log.i("Add Product ","Add product "+ result)
 
     }
 }

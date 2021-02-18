@@ -52,7 +52,6 @@ class AddProductViewModel(val productRepository: ProductRepository) : ViewModel(
         productData.data?.let {
             if(it.peremptionDate == -1L || it.peremptionDate > peremptionToMillis) {
 
-
                 val addedProduct = it.peremptionDate == -1L
                 it.peremptionDate = peremptionToMillis;
                 productRepository.addOrUpdateProduct(it)
