@@ -1,6 +1,7 @@
 package com.example.foodstock.ui.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
@@ -32,6 +33,7 @@ class MainActivity : AppCompatActivity() , AddProductListener {
 
     fun setupUi(){
         productListAdapter = ProductListAdapter(ArrayList(),this)
+       // productListAdapter.stateRestorationPolicy= RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         recycleVewProducts.layoutManager = LinearLayoutManager(this)
         recycleVewProducts.adapter = productListAdapter
         val ith = ItemTouchHelper(CustomItemTouchHelperCallback(productListAdapter))
@@ -43,7 +45,7 @@ class MainActivity : AppCompatActivity() , AddProductListener {
 
     private fun showAlertDialog() {
         val fm: FragmentManager = supportFragmentManager
-        val alertDialog: AddProductDialog = AddProductDialog.newInstance("addProduct",this)
+        val alertDialog: AddProductDialog = AddProductDialog.newInstance("addProduct")
         alertDialog.show(fm, "addProduct")
     }
     fun setUpLiveData(){
@@ -63,11 +65,16 @@ class MainActivity : AppCompatActivity() , AddProductListener {
     }
 
     override fun addProduct(product: Product) {
-        if(productListAdapter.foods.contains((product))){
+        if(productListAdapter.products.isEmpty()){
+            emptyListTv.visibility = View.GONE
+            recycleVewProducts.visibility = View.VISIBLE
+        }
+        if(productListAdapter.products.contains((product))){
             productListAdapter.updateProduct(product)
 
         }else {
             productListAdapter.addProduct(product)
+
         }
     }
 }

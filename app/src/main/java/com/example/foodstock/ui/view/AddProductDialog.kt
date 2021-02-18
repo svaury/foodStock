@@ -3,8 +3,12 @@ package com.example.foodstock.ui.view
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
@@ -14,56 +18,62 @@ import com.example.foodstock.utils.Status
 import com.example.foodstock.ui.viewmodel.AddProductViewModel
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.product_add_dialog_layout.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
-class AddProductDialog(val addProductListener: AddProductListener) : DialogFragment() {
+class AddProductDialog() : DialogFragment() {
 
     val addProductViewModel : AddProductViewModel by viewModel<AddProductViewModel>()
-    lateinit var customLayout : View
 
+    lateinit var addProductListener: AddProductListener
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+       addProductListener = (activity as MainActivity)
+
+    }
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        Log.i("CreateView","Createview")
+        return  inflater.inflate(R.layout.product_add_dialog_layout, null);
+
+    }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
+        initDialog()
         setUpLiveData()
+
     }
 
 
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-         customLayout = layoutInflater.inflate(R.layout.product_add_dialog_layout, null);
-
-        val barCodeEditText = customLayout.findViewById<TextInputEditText>(R.id.barCodeEditText)
-        val peremptionDateEditText = customLayout.findViewById<TextInputEditText>(R.id.peremptionDateEditText)
-        val searchValidateButton = customLayout.findViewById<Button>(R.id.searchValidateButton)
+    fun initDialog(){
 
         searchValidateButton.setOnClickListener {
+            progressBar.visibility =View.VISIBLE
+            peremptionDateInputLayout.error = null
+            barCodeInputLayout.error = null
+
             addProductViewModel.searchProduct(barCodeEditText.text.toString(),peremptionDateEditText.text.toString())
         }
-
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-            .setTitle("Research a product")
-            .setView(customLayout)
-            .setCancelable(false)
-            .setMessage("Please select a barcode and a peremption date")
-            alertDialogBuilder.setNegativeButton("Cancel",
-            DialogInterface.OnClickListener { dialog, which ->
-                dialog?.dismiss()
-            })
-
-        val alertDialog =  alertDialogBuilder.create()
-        alertDialog.setCanceledOnTouchOutside(false)
+         cancelButton.setOnClickListener {
+             dismiss()
+         }
+       dialog?.apply {
+           setCancelable(false)
+           setCanceledOnTouchOutside(false)
+       }
 
 
-        return alertDialog
     }
-
 
     fun setUpLiveData(){
 
 
         addProductViewModel.searchResultLiveData.observe(this, Observer {
+            progressBar.visibility =View.GONE
+
             when(it.status){
                 Status.ERROR -> {
                     Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
@@ -76,13 +86,11 @@ class AddProductDialog(val addProductListener: AddProductListener) : DialogFragm
                 }
                 Status.ERROR_BARCODE ->{
                     Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
-                    val inputLayout= customLayout?.findViewById<TextInputLayout>(R.id.barCodeInputLayout)
-                    inputLayout.error = it.message
+                    barCodeInputLayout.error = it.message
                 }
                 Status.ERROR_PEREMPTION ->{
                     Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
-                    val inputLayout= customLayout?.findViewById<TextInputLayout>(R.id.peremptionDateInputLayout)
-                    inputLayout.error = it.message
+                    peremptionDateInputLayout.error = it.message
                 }
             }
 
@@ -92,8 +100,8 @@ class AddProductDialog(val addProductListener: AddProductListener) : DialogFragm
     }
 
     companion object {
-        fun newInstance(title: String?, addProductListener: AddProductListener): AddProductDialog {
-            val frag = AddProductDialog(addProductListener)
+        fun newInstance(title: String?): AddProductDialog {
+            val frag = AddProductDialog()
             val args = Bundle()
             args.putString("addProduct", title)
             frag.arguments = args
