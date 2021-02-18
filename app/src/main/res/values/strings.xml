@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">FoodStock</string>
     <string name="empty_list">List is empty</string>
+    <string name = "search_product_title">Search a Product and add a peremption date </string>
+    <string name = "bar_code">barcode </string>
+    <string name = "peremption_date">peremption date </string>
+    <string name="search_button">Search</string>
+    <string name="cancel">Cancel</string>
 </resources>

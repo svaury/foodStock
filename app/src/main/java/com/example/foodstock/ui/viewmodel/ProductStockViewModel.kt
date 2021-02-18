@@ -1,6 +1,5 @@
 package com.example.foodstock.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,17 +13,25 @@ import kotlinx.coroutines.launch
 class ProductStockViewModel(val productRepository: ProductRepository): ViewModel() {
 
     init {
-        Log.i("MusicProject","init view model")
         getProducts()
     }
 
     val productListLiveData : MutableLiveData<List<Product>> = MutableLiveData()
+
 
     private fun getProducts(){
 
         GlobalScope.launch(viewModelScope.coroutineContext + Dispatchers.IO){
 
             productRepository.getProductList().collect{ value -> productListLiveData.postValue(value) }
+        }
+    }
+
+    fun removeProducts(product: Product){
+
+        GlobalScope.launch(viewModelScope.coroutineContext + Dispatchers.IO){
+
+            productRepository.removeProduct(product)
         }
     }
 }
