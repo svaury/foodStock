@@ -9,11 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.foodstock.MyApplication
 import com.example.foodstock.R
 import com.example.foodstock.model.Product
+import com.example.foodstock.ui.viewmodel.AddProductViewModel
+import com.example.foodstock.ui.viewmodel.ProductStockViewModel
 import java.util.*
 import kotlin.collections.ArrayList
 
 
-class ProductListAdapter(var products:ArrayList<Product>, val context : Context): RecyclerView.Adapter<ProductViewHolder>() {
+class ProductListAdapter(var products:ArrayList<Product>, val context : Context, val productViewModel: ProductStockViewModel): RecyclerView.Adapter<ProductViewHolder>() {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ProductViewHolder {
         val view: View = LayoutInflater.from(context).inflate(R.layout.product_list_detail_layout,p0,false)
@@ -49,8 +51,13 @@ class ProductListAdapter(var products:ArrayList<Product>, val context : Context)
         notifyItemMoved(currentPos, targetPos)
     }
 
+    fun removeProduct(position: Int){
+        val productRemove =  products.removeAt(position)
+        productViewModel.removeProducts(productRemove)
+        notifyItemRemoved(position)
+    }
+
     override fun getItemCount(): Int {
-        Log.i("addProduct","AddProduct "+ products.size)
 
         return products.size
     }

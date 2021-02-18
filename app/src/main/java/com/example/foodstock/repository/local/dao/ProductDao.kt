@@ -15,5 +15,8 @@ interface ProductDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertProduct(productEntity: ProductEntity): Long
 
+    @Delete
+    fun removeProduct(productEntity: ProductEntity)
+
 
 }

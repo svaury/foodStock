@@ -1,6 +1,5 @@
 package com.example.foodstock.repository
 
-import android.util.Log
 import com.example.foodstock.Data
 import com.example.foodstock.model.Product
 import com.example.foodstock.repository.local.dao.ProductDao
@@ -15,6 +14,10 @@ class ProductRepository(var productDao: ProductDao, var getProductService: GetPr
     fun getProductList(): Flow<List<Product>> = flow {
        val result =  productDao.getAll().map { ToProductModelMapper().entityToProductModel(it)}
         emit(result)
+    }
+
+    fun removeProduct(product: Product){
+        productDao.removeProduct(ToProductEntityMapper().entityToProductModel(product))
     }
 
     fun getProductByBarCode(barCode : String): Flow<Data<Product>>? = flow{

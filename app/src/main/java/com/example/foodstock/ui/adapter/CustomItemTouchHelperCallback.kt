@@ -23,9 +23,7 @@ class CustomItemTouchHelperCallback( val adapter: ProductListAdapter): ItemTouch
     }
 
     override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
+        adapter.removeProduct(viewHolder?.adapterPosition ?:0)
     }
-
-    //override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) =  adapter.removeProduct(viewHolder?.adapterPosition ?:0)
 
 }

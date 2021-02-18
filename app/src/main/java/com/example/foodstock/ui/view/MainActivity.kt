@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() , AddProductListener {
     }
 
     fun setupUi(){
-        productListAdapter = ProductListAdapter(ArrayList(),this)
+        productListAdapter = ProductListAdapter(ArrayList(),this,productStockViewModel)
        // productListAdapter.stateRestorationPolicy= RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         recycleVewProducts.layoutManager = LinearLayoutManager(this)
         recycleVewProducts.adapter = productListAdapter
