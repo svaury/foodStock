@@ -12,6 +12,6 @@ class ToProductModelMapper{
     }
 
     fun jsonToProductModel(productModelJson: ProductModelJson): Product{
-        return Product(null,productModelJson.barCode,productModelJson.name,productModelJson.imageUrl, -1L)
+        return Product(null,productModelJson.barCode,productModelJson.product!!.name,productModelJson.product.imageUrl, -1L)
     }
 }

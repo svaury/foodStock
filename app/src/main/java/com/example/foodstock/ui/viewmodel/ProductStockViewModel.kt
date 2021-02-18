@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 class ProductStockViewModel(val productRepository: ProductRepository): ViewModel() {
 
     init {
-        Log.i("MusicProject","init view model")
         getProducts()
     }
 

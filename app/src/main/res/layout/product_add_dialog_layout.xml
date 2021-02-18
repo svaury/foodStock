@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingLeft="20dp"
     android:paddingRight="20dp"
@@ -12,10 +10,12 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:id="@+id/barCodeInputLayout"
+        app:errorEnabled="true"
+        android:layout_margin="10dp"
         android:layout_height="wrap_content">
-        <EditText
-
+        <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/barCodeEditText"
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
@@ -23,12 +23,27 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/peremptionDateInputLayout"
         android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_margin="10dp"
         android:layout_height="wrap_content">
-        <EditText
+        <com.google.android.material.textfield.TextInputEditText
+            android:background="@color/white"
             android:id="@+id/peremptionDateEditText"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/searchValidateButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
 
 
 </LinearLayout>

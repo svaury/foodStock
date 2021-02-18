@@ -5,70 +5,97 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.example.foodstock.R
+import com.example.foodstock.Status
 import com.example.foodstock.ui.viewmodel.AddProductViewModel
-import kotlinx.android.synthetic.main.product_add_dialog_layout.*
+import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
 class AddProductDialog : DialogFragment() {
-    private var mEditText: EditText? = null
 
-    val addProductViewModel by viewModel<AddProductViewModel>()
+    val addProductViewModel : AddProductViewModel by viewModel<AddProductViewModel>()
+    lateinit var customLayout : View
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
 
-        return inflater.inflate(R.layout.product_add_dialog_layout, container)
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        setUpLiveData()
+    }
+
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
+         customLayout = layoutInflater.inflate(R.layout.product_add_dialog_layout, null);
+
+        val barCodeEditText = customLayout.findViewById<TextInputEditText>(R.id.barCodeEditText)
+        val peremptionDateEditText = customLayout.findViewById<TextInputEditText>(R.id.peremptionDateEditText)
+        val searchValidateButton = customLayout.findViewById<Button>(R.id.searchValidateButton)
+
+        searchValidateButton.setOnClickListener {
+            addProductViewModel.searchProduct(barCodeEditText.text.toString(),peremptionDateEditText.text.toString())
+        }
+
+        val alertDialogBuilder = AlertDialog.Builder(requireContext())
+            .setTitle("Research a product")
+            .setView(customLayout)
+            .setCancelable(false)
+            .setMessage("Please select a barcode and a peremption date")
+            alertDialogBuilder.setNegativeButton("Cancel",
+            DialogInterface.OnClickListener { dialog, which ->
+                dialog?.dismiss()
+            })
+
+        val alertDialog =  alertDialogBuilder.create()
+        alertDialog.setCanceledOnTouchOutside(false)
+
+
+        return alertDialog
     }
 
 
     fun setUpLiveData(){
 
+
         addProductViewModel.searchResultLiveData.observe(this, Observer {
-            Log.i("AddProductDialog","Message "+ it.message )
+            when(it.status){
+                Status.ERROR -> {
+                    Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
+                }
+                Status.SUCCESS -> {
+                    Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
+                    // add listener
+                    dismiss()
+
+                }
+                Status.ERROR_BARCODE ->{
+                    Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
+                    val inputLayout= customLayout?.findViewById<TextInputLayout>(R.id.barCodeInputLayout)
+                    inputLayout.error = it.message
+                }
+                Status.ERROR_PEREMPTION ->{
+                    Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
+                    val inputLayout= customLayout?.findViewById<TextInputLayout>(R.id.peremptionDateInputLayout)
+                    inputLayout.error = it.message
+                }
+            }
+
+
         })
 
     }
-    override fun onViewCreated(view: View, @Nullable savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setUpLiveData()
-
-
-    }
-
-    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        return super.onCreateDialog(savedInstanceState)
-        val alertDialogBuilder = AlertDialog.Builder(requireContext())
-            .setTitle("Research a product")
-            .setMessage("Please select a barcode and a peremption date")
-            .setPositiveButton("Validate"
-            ) { dialog, which ->
-                addProductViewModel.searchProduct(barCodeEditText.text.toString(),peremptionDateEditText.text.toString())
-            }
-
-        alertDialogBuilder.setNegativeButton("Cancel",
-            DialogInterface.OnClickListener { dialog, which ->
-                if (dialog != null ) {
-                    dialog.dismiss()
-                }
-            })
-
-
-
-        return alertDialogBuilder.create()
-    }
-
-
 
     companion object {
         fun newInstance(title: String?): AddProductDialog {

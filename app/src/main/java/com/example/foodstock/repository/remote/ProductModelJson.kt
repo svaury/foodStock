@@ -6,12 +6,14 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class ProductModelJson(
-    @SerializedName("packaging")
-    val name: String,
+    @SerializedName("product")
+    val product : ProductJson?,
     @SerializedName("code")
     val barCode : String,
-    @SerializedName("image_thumb_url")
-    val imageUrl : String?
+    @SerializedName("status_verbose")
+    val statusMessage : String,
+    @SerializedName("status")
+    val status : Int
 
 ): Parcelable
 

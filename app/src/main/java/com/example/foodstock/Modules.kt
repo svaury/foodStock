@@ -37,6 +37,4 @@ val applicationModule = module {
     viewModel { ProductStockViewModel(get()) }
 
     viewModel { AddProductViewModel(get()) }
-
-
 }

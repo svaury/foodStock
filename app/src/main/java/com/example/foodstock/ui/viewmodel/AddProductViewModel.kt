@@ -1,13 +1,16 @@
 package com.example.foodstock.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.foodstock.Data
+import com.example.foodstock.Status
 import com.example.foodstock.model.Product
 import com.example.foodstock.repository.ProductRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -22,45 +25,49 @@ class AddProductViewModel(val productRepository: ProductRepository) : ViewModel(
         val peremptionDateError =checkPeremptionDate(peremptionDate);
         var error = false;
 
-        if(!barCode.isNullOrEmpty()){
+        if(barCode.isNullOrEmpty()){
             error = true
             searchResultLiveData.postValue(Data.errorBarCode(null,barCodeError))
 
         }
-        if(!peremptionDate.isNullOrEmpty()){
+        if(peremptionDate.isNullOrEmpty() && !error){
             error = true
             searchResultLiveData.postValue(Data.errorPeremption(null,peremptionDateError))
 
         }
         if(!error){
             GlobalScope.launch(viewModelScope.coroutineContext + Dispatchers.IO){
-                val product = productRepository.getProductByBarCode(barCode)?.first() ?: null
-                val peremptionToMillis = convertDateToMillis(peremptionDate)
-                postResult(product, peremptionToMillis)
-
+                productRepository.getProductByBarCode(barCode)?.collect { product-> postResult(product,  convertDateToMillis(peremptionDate))
+                }
             }
         }
 
     }
 
-    fun postResult(product: Product ?, peremptionToMillis: Long){
-        product?.let {
+    fun postResult(productData: Data<Product> , peremptionToMillis: Long){
+
+        productData.data?.let {
             if(it.peremptionDate == -1L || it.peremptionDate < peremptionToMillis) {
 
                 val addedProduct = it.peremptionDate != -1L
                 it.peremptionDate = peremptionToMillis;
                 productRepository.addOrUpdateProduct(it)
                 if(addedProduct){
-                    searchResultLiveData.postValue(Data.success(product,"Product "+ it.name + " have been added"))
+                    searchResultLiveData.postValue(Data.success(it,"Product "+ it.name + " have been added"))
                 }else{
-                    searchResultLiveData.postValue(Data.success(product,"Product " + it.name + "  have been updated"))
+                    searchResultLiveData.postValue(Data.success(it,"Product " + it.name + "  have been updated"))
 
                 }
 
             }else{
-                searchResultLiveData.postValue(Data.errorPeremption(null, "Peremption date is highter than peremption of current product"))
+                searchResultLiveData.postValue(Data.error(null, "Peremption date is highter than peremption of current product"))
             }
+        }?:let{
+            searchResultLiveData.postValue(Data.error(null, productData.message?:""))
+
         }
+
+
 
     }
 
@@ -76,9 +83,6 @@ class AddProductViewModel(val productRepository: ProductRepository) : ViewModel(
             barCode.isNullOrEmpty() -> {
                 "BarCode must be informed"
             }
-            barCode.length > 13 -> {
-                "BarCode must contain less than 13 characters"
-            }
             else -> {
                 "";
             }
@@ -88,6 +92,7 @@ class AddProductViewModel(val productRepository: ProductRepository) : ViewModel(
 
     fun checkPeremptionDate( peremptionDate:String ): String{
         return when {
+            // testDate format
             peremptionDate.isNullOrEmpty() -> {
                 "Premption Date must be informed"
             }

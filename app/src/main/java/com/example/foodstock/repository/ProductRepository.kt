@@ -1,10 +1,14 @@
 package com.example.foodstock.repository
 
+import android.util.Log
+import com.example.foodstock.Data
 import com.example.foodstock.model.Product
 import com.example.foodstock.repository.local.dao.ProductDao
 import com.example.foodstock.repository.mapper.ToProductEntityMapper
 import com.example.foodstock.repository.mapper.ToProductModelMapper
 import com.example.foodstock.repository.remote.GetProductService
+import com.example.foodstock.repository.remote.ProductJson
+import com.example.foodstock.repository.remote.ProductModelJson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -15,16 +19,26 @@ class ProductRepository(var productDao: ProductDao, var getProductService: GetPr
         emit(result)
     }
 
-    fun getProductByBarCode(barCode : String): Flow<Product>? = flow{
+    fun getProductByBarCode(barCode : String): Flow<Data<Product>>? = flow{
         val result = productDao.findProductByBarCode(barCode)
         result?.let {
-            emit(ToProductModelMapper().entityToProductModel(result))
+            emit(Data.success(ToProductModelMapper().entityToProductModel(result),""))
         }?:let{
-            val productFromRemote = getProductService.getProductByBarCode(barCode)
-            emit(ToProductModelMapper().jsonToProductModel(productFromRemote))
+            try {
+                val productFromRemote = getProductService.getProductByBarCode(barCode)
+                productFromRemote.product?.let {
+                    emit(Data.success(ToProductModelMapper().jsonToProductModel(productFromRemote),""))
+
+                }?:let {
+                    emit(Data.error(null, productFromRemote.statusMessage?: ""))
+
+                }
+            }catch(exception: Exception){
+                emit(Data.error(null,"Une erreur est survenue"))
+
+            }
         }
     }
-
 
     fun addOrUpdateProduct(product: Product) : Flow<Long>? = flow{
         val result = productDao.insertProduct(ToProductEntityMapper().entityToProductModel(product))

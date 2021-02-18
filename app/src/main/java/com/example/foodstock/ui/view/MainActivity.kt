@@ -3,6 +3,7 @@ package com.example.foodstock.ui.view
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
 import com.example.foodstock.R
 import com.example.foodstock.ui.adapter.ProductListAdapter
@@ -29,8 +30,16 @@ class MainActivity : AppCompatActivity() {
 
         productListAdapter = ProductListAdapter(ArrayList(),this)
         recycleVewProducts.adapter = productListAdapter
+        buttonAddProduct.setOnClickListener {
+            showAlertDialog()
+        }
     }
 
+    private fun showAlertDialog() {
+        val fm: FragmentManager = supportFragmentManager
+        val alertDialog: AddProductDialog = AddProductDialog.newInstance("addProduct")
+        alertDialog.show(fm, "addProduct")
+    }
     fun setUpLiveData(){
         productStockViewModel.productListLiveData.observe(this, Observer {
             if(it.isNullOrEmpty()){
