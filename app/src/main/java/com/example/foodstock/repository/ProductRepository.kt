@@ -7,8 +7,6 @@ import com.example.foodstock.repository.local.dao.ProductDao
 import com.example.foodstock.repository.mapper.ToProductEntityMapper
 import com.example.foodstock.repository.mapper.ToProductModelMapper
 import com.example.foodstock.repository.remote.GetProductService
-import com.example.foodstock.repository.remote.ProductJson
-import com.example.foodstock.repository.remote.ProductModelJson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
@@ -40,8 +38,12 @@ class ProductRepository(var productDao: ProductDao, var getProductService: GetPr
         }
     }
 
-    fun addOrUpdateProduct(product: Product) : Flow<Long>? = flow{
+    fun addOrUpdateProduct(product: Product){
+        Log.i("Add Product ","Add product ")
+
         val result = productDao.insertProduct(ToProductEntityMapper().entityToProductModel(product))
-        emit(result)
+
+        Log.i("Add Product ","Add product "+ result)
+
     }
 }

@@ -1,5 +1,6 @@
 package com.example.foodstock.ui.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,12 +28,12 @@ class AddProductViewModel(val productRepository: ProductRepository) : ViewModel(
         val peremptionDateError =checkPeremptionDate(peremptionDate);
         var error = false;
 
-        if(barCode.isNullOrEmpty()){
+        if(!barCodeError.isNullOrEmpty()){
             error = true
             searchResultLiveData.postValue(Data.errorBarCode(null,barCodeError))
 
         }
-        if(peremptionDate.isNullOrEmpty() && !error){
+        if(!peremptionDateError.isNullOrEmpty() && !error){
             error = true
             searchResultLiveData.postValue(Data.errorPeremption(null,peremptionDateError))
 
@@ -51,14 +52,14 @@ class AddProductViewModel(val productRepository: ProductRepository) : ViewModel(
         productData.data?.let {
             if(it.peremptionDate == -1L || it.peremptionDate > peremptionToMillis) {
 
-                val addedProduct = it.peremptionDate != -1L
+
+                val addedProduct = it.peremptionDate == -1L
                 it.peremptionDate = peremptionToMillis;
                 productRepository.addOrUpdateProduct(it)
                 if(addedProduct){
                     searchResultLiveData.postValue(Data.success(it,"Product "+ it.name + " have been added"))
                 }else{
                     searchResultLiveData.postValue(Data.success(it,"Product " + it.name + "  have been updated"))
-
                 }
 
             }else{
@@ -74,32 +75,36 @@ class AddProductViewModel(val productRepository: ProductRepository) : ViewModel(
     }
 
 
-
-
-
-
     fun checkDateFormat(peremptionDate: String): Boolean{
 
         val formatter: DateFormat = SimpleDateFormat("dd/MM/yyyy")
         formatter.setLenient(false)
-        try {
+        return try {
             val date: Date = formatter.parse(peremptionDate)
-            return true
+            true
         } catch (e: ParseException) {
-            return false;
+            false;
         }
     }
 
-    fun checkBarCode( barCode:String ): String{
+    fun checkBarCode( barCode:String? ): String{
         return when {
             barCode.isNullOrEmpty() -> {
-                "BarCode must be informed"
+                "Barcode must be informed"
+            }
+            barCode.length != 13 -> {
+                "Barcode must contain 13 character. If there is not 13 , complete with 0 before codeBar"
             }
             else -> {
-                "";
+
+                val barCode = barCode.toLongOrNull()
+                barCode?.let{
+                    return ""
+                }?:let{
+                    return "BarCode must contain only number"
+                }
             }
         }
-
     }
 
     fun checkPeremptionDate( peremptionDate:String ): String{

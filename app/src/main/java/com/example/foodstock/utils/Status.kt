@@ -1,4 +1,4 @@
-package com.example.foodstock
+package com.example.foodstock.utils
 
 enum class Status {
     SUCCESS,

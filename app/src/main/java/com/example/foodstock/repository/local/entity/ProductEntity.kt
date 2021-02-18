@@ -14,8 +14,6 @@ data class ProductEntity (
     @ColumnInfo(name = "thumbnailUrl") val thumbnailUrl : String?,
     @ColumnInfo(name = "peremptionDate") val peremptionDate : Long
 
-
-
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

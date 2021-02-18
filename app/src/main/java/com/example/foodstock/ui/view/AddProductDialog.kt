@@ -3,27 +3,21 @@ package com.example.foodstock.ui.view
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.widget.Button
-import android.widget.EditText
 import android.widget.Toast
-import androidx.annotation.Nullable
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.example.foodstock.R
-import com.example.foodstock.Status
+import com.example.foodstock.utils.Status
 import com.example.foodstock.ui.viewmodel.AddProductViewModel
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import org.koin.android.viewmodel.ext.android.viewModel
 
 
-class AddProductDialog : DialogFragment() {
+class AddProductDialog(val addProductListener: AddProductListener) : DialogFragment() {
 
     val addProductViewModel : AddProductViewModel by viewModel<AddProductViewModel>()
     lateinit var customLayout : View
@@ -76,7 +70,7 @@ class AddProductDialog : DialogFragment() {
                 }
                 Status.SUCCESS -> {
                     Toast.makeText(activity,it.message , Toast.LENGTH_LONG).show()
-                    // add listener
+                    addProductListener.addProduct(it.data!!)
                     dismiss()
 
                 }
@@ -98,8 +92,8 @@ class AddProductDialog : DialogFragment() {
     }
 
     companion object {
-        fun newInstance(title: String?): AddProductDialog {
-            val frag = AddProductDialog()
+        fun newInstance(title: String?, addProductListener: AddProductListener): AddProductDialog {
+            val frag = AddProductDialog(addProductListener)
             val args = Bundle()
             args.putString("addProduct", title)
             frag.arguments = args

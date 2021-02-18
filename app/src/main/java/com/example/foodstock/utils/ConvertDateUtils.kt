@@ -11,12 +11,6 @@ class ConvertDateUtils {
         val dateFormat = "dd/MM/yyyy";
         val simpleDateFormat = SimpleDateFormat (dateFormat);
 
-        fun convertMilliSecondsToFormattedDate(milliSeconds: String): String{
-            val calendar = Calendar.getInstance();
-            calendar.timeInMillis = milliSeconds.toLong()
-            return simpleDateFormat.format(calendar.getTime());
-        }
-
         fun convertDateToMillis(peremptionDate: String): Long {
             val date = simpleDateFormat.parse(peremptionDate)
             val cal = Calendar.getInstance()

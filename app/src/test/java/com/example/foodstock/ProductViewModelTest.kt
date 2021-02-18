@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer
 import com.example.foodstock.model.Product
 import com.example.foodstock.repository.ProductRepository
 import com.example.foodstock.ui.viewmodel.AddProductViewModel
+import com.example.foodstock.utils.Status
 import io.mockk.every
 import io.mockk.mockkClass
 import junit.framework.Assert.assertEquals
@@ -30,15 +31,27 @@ class ProductViewModelTest {
     fun testSearchProductError(){
         every {
             productRepository.addOrUpdateProduct(any())
-        } returns flow {emit(1L)}
+        } returns Unit
 
         addProductViewModel.searchProduct("","05/04/2022")
 
-        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,Status.ERROR_BARCODE )
+        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,
+            Status.ERROR_BARCODE )
 
-        addProductViewModel.searchProduct("1234567","")
+        addProductViewModel.searchProduct("0001234567","")
 
-        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,Status.ERROR_PEREMPTION )
+        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,
+            Status.ERROR_BARCODE )
+
+        addProductViewModel.searchProduct("000123456B000","")
+
+        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,
+            Status.ERROR_BARCODE )
+
+        addProductViewModel.searchProduct("0001234567000","")
+
+        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,
+            Status.ERROR_PEREMPTION )
 
     }
 
@@ -47,7 +60,7 @@ class ProductViewModelTest {
 
         every {
             productRepository.addOrUpdateProduct(any())
-        } returns flow {emit(1L)}
+        } returns Unit
 
         val product = Product(null,"123456","testProduct","",1645398000000)
         val peremptionDateLower = 1613862000000
@@ -56,12 +69,14 @@ class ProductViewModelTest {
 
         addProductViewModel.postResult(data, peremptionDateLower)
 
-        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,Status.SUCCESS )
+        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,
+            Status.SUCCESS )
 
         val peremptionDateHighter = 1676934000000
 
         addProductViewModel.postResult(data, peremptionDateHighter)
-        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,Status.ERROR )
+        assertEquals(addProductViewModel.searchResultLiveData.getOrAwaitValue().status,
+            Status.ERROR )
     }
 
     fun <T> LiveData<T>.getOrAwaitValue(

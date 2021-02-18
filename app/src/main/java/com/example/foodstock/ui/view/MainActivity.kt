@@ -5,13 +5,18 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.foodstock.R
+import com.example.foodstock.model.Product
+import com.example.foodstock.ui.adapter.CustomItemTouchHelperCallback
 import com.example.foodstock.ui.adapter.ProductListAdapter
 import com.example.foodstock.ui.viewmodel.ProductStockViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : AppCompatActivity() , AddProductListener {
 
     lateinit var productListAdapter : ProductListAdapter
 
@@ -23,13 +28,14 @@ class MainActivity : AppCompatActivity() {
         setupUi()
         setUpLiveData()
 
-
     }
 
     fun setupUi(){
-
         productListAdapter = ProductListAdapter(ArrayList(),this)
+        recycleVewProducts.layoutManager = LinearLayoutManager(this)
         recycleVewProducts.adapter = productListAdapter
+        val ith = ItemTouchHelper(CustomItemTouchHelperCallback(productListAdapter))
+        ith.attachToRecyclerView(recycleVewProducts)
         buttonAddProduct.setOnClickListener {
             showAlertDialog()
         }
@@ -37,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun showAlertDialog() {
         val fm: FragmentManager = supportFragmentManager
-        val alertDialog: AddProductDialog = AddProductDialog.newInstance("addProduct")
+        val alertDialog: AddProductDialog = AddProductDialog.newInstance("addProduct",this)
         alertDialog.show(fm, "addProduct")
     }
     fun setUpLiveData(){
@@ -54,5 +60,14 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+    }
+
+    override fun addProduct(product: Product) {
+        if(productListAdapter.foods.contains((product))){
+            productListAdapter.updateProduct(product)
+
+        }else {
+            productListAdapter.addProduct(product)
+        }
     }
 }

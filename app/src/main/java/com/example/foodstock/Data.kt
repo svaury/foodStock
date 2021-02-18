@@ -1,5 +1,7 @@
 package com.example.foodstock
 
+import com.example.foodstock.utils.Status
+
 data class Data<out T>(val status: Status, val data: T?, val message: String?) {
     companion object {
         fun <T> success(data: T, message: String): Data<T> = Data(status = Status.SUCCESS, data = data, message = message )
